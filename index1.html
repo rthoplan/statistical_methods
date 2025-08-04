@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Data Types Tree Diagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+        }
+        .tree-container {
+            display: flex;
+            flex-direction: column; /* Changed to column */
+            justify-content: flex-start;
+            align-items: center;
+            padding: 2rem;
+            min-height: 500px;
+        }
+        .tree {
+            white-space: nowrap;
+            text-align: center;
+        }
+        .tree ul {
+            position: relative;
+            padding-top: 20px;
+            display: inline-flex;
+        }
+        .tree li {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            list-style-type: none;
+            position: relative;
+            padding: 20px 15px 0 15px;
+        }
+        /* Connectors */
+        .tree li::before, .tree li::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 50%;
+            border-top: 2px solid #a5b4fc;
+            width: 50%;
+            height: 20px;
+        }
+        .tree li::after {
+            right: auto;
+            left: 50%;
+            border-left: 2px solid #a5b4fc;
+        }
+        .tree li:only-child::after, .tree li:only-child::before {
+            display: none;
+        }
+        .tree li:only-child {
+            padding-top: 0;
+        }
+        .tree li:first-child::before, .tree li:last-child::after {
+            border: 0 none;
+        }
+        .tree li:last-child::before {
+            border-right: 2px solid #a5b4fc;
+            border-radius: 0 5px 0 0;
+        }
+        .tree li:first-child::after {
+            border-radius: 5px 0 0 0;
+        }
+        .tree ul ul::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            border-left: 2px solid #a5b4fc;
+            width: 0;
+            height: 20px;
+        }
+        .tree-node {
+            border: 2px solid #818cf8;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #3730a3;
+            background-color: #e0e7ff;
+            font-weight: 600;
+            display: inline-block;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            min-width: 120px;
+        }
+        .tree-node:hover {
+            background-color: #c7d2fe;
+        }
+        .tree-node.active {
+            background-color: #4f46e5;
+            color: white;
+            transform: scale(1.05);
+            border-color: #3730a3;
+        }
+        #example-display {
+            transition: opacity 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="tree-container">
+        <div class="tree">
+            <ul>
+                <li>
+                    <div class="tree-node">Data Type</div>
+                    <ul>
+                        <li>
+                            <div class="tree-node">Qualitative</div>
+                            <ul>
+                                <li>
+                                    <div class="tree-node terminal-node" data-title="Binary Data" data-examples='["Smoker Status (Yes/No)", "Claim Status (Claim/No Claim)", "Gender (Male/Female)"]'>
+                                        Binary
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="tree-node">Many-Valued</div>
+                                    <ul>
+                                        <li>
+                                            <div class="tree-node terminal-node" data-title="Nominal Data" data-examples='["Policy Type (Motor, Life, Health)", "Geographic Region (North, South)", "Marital Status (Single, Married)"]'>
+                                                Nominal
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="tree-node terminal-node" data-title="Ordinal Data" data-examples='["Risk Class (Low, Medium, High)", "Customer Satisfaction (1-5 scale)"]'>
+                                                Ordinal
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="tree-node">Quantitative</div>
+                            <ul>
+                                <li>
+                                    <div class="tree-node terminal-node" data-title="Discrete Data" data-examples='["Number of claims in a year", "Number of dependents", "Age last birthday"]'>
+                                        Discrete
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="tree-node terminal-node" data-title="Continuous Data" data-examples='["Claim amount ($)", "Sum Assured ($)", "Precise age (e.g., 35.7 years)"]'>
+                                        Continuous
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Example Display Area -->
+        <div id="example-display" class="mt-12 p-6 bg-white rounded-lg shadow-md w-full max-w-md hidden">
+            <h3 id="example-title" class="text-xl font-bold text-indigo-700 mb-3"></h3>
+            <ul id="example-list" class="list-disc list-inside text-gray-800 space-y-2"></ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const terminalNodes = document.querySelectorAll('.terminal-node');
+            const exampleDisplay = document.getElementById('example-display');
+            const exampleTitle = document.getElementById('example-title');
+            const exampleList = document.getElementById('example-list');
+
+            terminalNodes.forEach(node => {
+                node.addEventListener('click', (event) => {
+                    // Remove active class from all nodes
+                    terminalNodes.forEach(n => n.classList.remove('active'));
+                    // Add active class to the clicked node
+                    const clickedNode = event.currentTarget;
+                    clickedNode.classList.add('active');
+
+                    // Get data from attributes
+                    const title = clickedNode.dataset.title;
+                    const examples = JSON.parse(clickedNode.dataset.examples);
+
+                    // Populate the display area
+                    exampleTitle.textContent = title;
+                    exampleList.innerHTML = ''; // Clear previous examples
+                    examples.forEach(exampleText => {
+                        const li = document.createElement('li');
+                        li.textContent = exampleText;
+                        exampleList.appendChild(li);
+                    });
+
+                    // Show the display area
+                    exampleDisplay.classList.remove('hidden');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
