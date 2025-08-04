@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Diagram: Anscombe's Quartet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="max-w-6xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+        <header class="text-center mb-8">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">The Importance of EDA: Anscombe's Quartet</h1>
+            <p class="text-gray-600 mt-2">These four datasets seem identical based on their statistics. But are they? Click "Plot Data" to find out.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <!-- Statistics Section -->
+            <div class="bg-gray-100 p-6 rounded-lg">
+                <h3 class="font-bold text-xl mb-4 text-center text-gray-700">Nearly Identical Summary Statistics</h3>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-gray-800">
+                    <div>Mean of x:</div><div class="font-mono font-semibold">9.0</div>
+                    <div>Mean of y:</div><div class="font-mono font-semibold">7.50</div>
+                    <div>Variance of x:</div><div class="font-mono font-semibold">11.0</div>
+                    <div>Variance of y:</div><div class="font-mono font-semibold">4.12 - 4.13</div>
+                    <div>Correlation:</div><div class="font-mono font-semibold">0.816</div>
+                    <div class="col-span-2 mt-2 pt-2 border-t">Linear Regression Line:</div>
+                    <div class="col-span-2 font-mono font-semibold text-center">y = 3.00 + 0.500x</div>
+                </div>
+                <div class="text-center mt-8">
+                    <button onclick="plotAnscombe()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-md transition-transform transform hover:scale-105">
+                        Plot the Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="chart-container"><canvas id="chart1"></canvas></div>
+                <div class="chart-container"><canvas id="chart2"></canvas></div>
+                <div class="chart-container"><canvas id="chart3"></canvas></div>
+                <div class="chart-container"><canvas id="chart4"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const anscombeData = {
+            I:  [[10, 8.04], [8, 6.95], [13, 7.58], [9, 8.81], [11, 8.33], [14, 9.96], [6, 7.24], [4, 4.26], [12, 10.84], [7, 4.82], [5, 5.68]],
+            II: [[10, 9.14], [8, 8.14], [13, 8.74], [9, 8.77], [11, 9.26], [14, 8.1], [6, 6.13], [4, 3.1], [12, 9.13], [7, 7.26], [5, 4.74]],
+            III:[[10, 7.46], [8, 6.77], [13, 12.74], [9, 7.11], [11, 7.81], [14, 8.84], [6, 6.08], [4, 5.39], [12, 8.15], [7, 6.42], [5, 5.73]],
+            IV: [[8, 6.58], [8, 5.76], [8, 7.71], [8, 8.84], [8, 8.47], [8, 7.04], [8, 5.25], [19, 12.5], [8, 5.56], [8, 7.91], [8, 6.89]]
+        };
+        
+        let charts = [];
+
+        function plotAnscombe() {
+            if (charts.length > 0) {
+                charts.forEach(chart => chart.destroy());
+                charts = [];
+            }
+            
+            const datasets = Object.values(anscombeData);
+            const colors = [
+                { bg: 'rgba(54, 162, 235, 0.6)', border: 'rgba(54, 162, 235, 1)' },
+                { bg: 'rgba(255, 99, 132, 0.6)', border: 'rgba(255, 99, 132, 1)' },
+                { bg: 'rgba(75, 192, 192, 0.6)', border: 'rgba(75, 192, 192, 1)' },
+                { bg: 'rgba(255, 206, 86, 0.6)', border: 'rgba(255, 206, 86, 1)' }
+            ];
+
+            for (let i = 0; i < datasets.length; i++) {
+                const ctx = document.getElementById(`chart${i+1}`).getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: `Dataset ${i+1}`,
+                            data: datasets[i].map(p => ({x: p[0], y: p[1]})),
+                            backgroundColor: colors[i].bg,
+                            borderColor: colors[i].border,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: `Dataset ${i+1}`, font: { size: 14 } }
+                        },
+                        scales: {
+                            x: { 
+                                min: 2, 
+                                max: 20, 
+                                title: { display: true, text: 'x' } 
+                            },
+                            y: { 
+                                min: 2, 
+                                max: 14, 
+                                title: { display: true, text: 'y' } 
+                            }
+                        }
+                    }
+                });
+                charts.push(chart);
+            }
+        }
+    </script>
+</body>
+</html>
