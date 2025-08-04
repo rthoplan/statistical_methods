@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Display: Sampling vs. Non-Sampling Errors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .error-card {
+            transition: all 0.3s ease-in-out;
+        }
+        .error-card.expandable:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .examples-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out, opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+        .examples-container.show {
+            max-height: 1000px; /* Large enough to fit content */
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="max-w-5xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Understanding Errors in Data</h1>
+            <p class="text-gray-600 mt-2">Explore the two main types of statistical errors.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Sampling Error Card -->
+            <div class="error-card bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-100 text-blue-600 p-3 rounded-full mr-4">
+                        <i class="fas fa-arrows-left-right-to-line fa-lg"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Sampling Error</h2>
+                </div>
+                <p class="text-gray-700">The difference between a sample statistic and the true population parameter. It's the inherent uncertainty from not measuring everyone.</p>
+                <div class="mt-4 bg-blue-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-blue-800">Key Characteristics:</h4>
+                    <ul class="list-disc list-inside mt-2 text-sm text-gray-600 space-y-1">
+                        <li>Occurs only in sample surveys.</li>
+                        <li>A natural result of randomness.</li>
+                        <li>Can be reduced by increasing the sample size.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Non-Sampling Error Card -->
+            <div id="ns-error-card" class="error-card expandable bg-white p-6 rounded-xl shadow-md border-t-4 border-red-500 cursor-pointer" onclick="toggleExamples()">
+                <div class="flex items-center mb-4">
+                    <div class="bg-red-100 text-red-600 p-3 rounded-full mr-4">
+                        <i class="fas fa-user-xmark fa-lg"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Non-Sampling Error</h2>
+                </div>
+                <p class="text-gray-700">An error that occurs during data collection, causing the data to be incorrect. Increasing sample size will not fix these.</p>
+                 <div class="mt-4 text-center text-red-700 font-semibold">
+                    <i class="fas fa-hand-pointer mr-2"></i>Click to see examples
+                </div>
+
+                <!-- Hidden Examples Container -->
+                <div id="examples-container" class="examples-container mt-6">
+                    <div class="space-y-4">
+                        <!-- Example 1: Non-Response -->
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="font-bold text-gray-800">Non-Response</h4>
+                            <p class="text-sm text-gray-600 mt-1">
+                                Scenario: An insurer sends a lifestyle survey to 1,000 policyholders. Only 300 respond, mostly older individuals.
+                                <br>
+                                Impact: The results will be biased, suggesting the portfolio is less healthy than it truly is, as the habits of younger, healthier policyholders are not captured.
+                            </p>
+                        </div>
+                        <!-- Example 2: Interviewer Bias -->
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="font-bold text-gray-800">Interviewer Bias</h4>
+                            <p class="text-sm text-gray-600 mt-1">
+                                Scenario: An agent, wanting to secure a sale, asks an applicant, "You don't have any serious health conditions, right?"
+                                <br>
+                                Impact: This leading question pressures the applicant to say "no," even if they have a condition, leading to inaccurate underwriting data.
+                            </p>
+                        </div>
+                        <!-- Example 3: Coder Bias -->
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="font-bold text-gray-800">Coder Bias</h4>
+                            <p class="text-sm text-gray-600 mt-1">
+                                Scenario: A data entry clerk is processing claim forms and consistently mistakes a doctor's handwritten "Smoker" for "Non-Smoker".
+                                <br>
+                                Impact: The resulting data will understate the number of claims from smokers, leading to incorrect mortality assumptions for that group.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleExamples() {
+            const container = document.getElementById('examples-container');
+            container.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
