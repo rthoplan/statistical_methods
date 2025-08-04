@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive 4-Step Actuarial Scenario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .step-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-content.active {
+            display: block;
+        }
+        .step {
+            transition: all 0.3s ease;
+        }
+        .step.completed .step-circle {
+            background-color: #16a34a;
+            border-color: #16a34a;
+            color: white;
+        }
+        .step.active .step-circle {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+        .step.active .step-title {
+            color: #1e3a8a;
+            font-weight: 700;
+        }
+        .step-line {
+            height: 2px;
+            background-color: #e5e7eb;
+            top: 1.125rem;
+            left: 50%;
+            right: -50%;
+            position: absolute;
+            z-index: -1;
+        }
+        .step.completed .step-line {
+            background-color: #16a34a;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex items-center justify-center min-h-screen">
+
+    <div class="max-w-4xl w-full mx-auto bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">A Simple Actuarial Task</h1>
+            <p class="text-gray-600 mt-2">Scenario: A small company with 50 employees wants a group life insurance plan.</p>
+        </header>
+
+        <!-- Stepper Navigation -->
+        <div id="stepper" class="w-full max-w-2xl mx-auto mb-10 grid grid-cols-4 gap-4">
+            <div id="step-nav-1" class="step active text-center relative">
+                <div class="step-circle w-9 h-9 mx-auto bg-white border-2 border-blue-600 rounded-full text-lg flex items-center justify-center font-bold text-blue-600">
+                    <i class="fas fa-database"></i>
+                </div>
+                <p class="step-title text-sm mt-2">1. Collection</p>
+                <div class="step-line"></div>
+            </div>
+            <div id="step-nav-2" class="step text-center relative">
+                <div class="step-circle w-9 h-9 mx-auto bg-white border-2 border-gray-300 rounded-full text-lg flex items-center justify-center font-bold text-gray-400">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <p class="step-title text-sm text-gray-500 mt-2">2. Organisation</p>
+                 <div class="step-line"></div>
+            </div>
+            <div id="step-nav-3" class="step text-center relative">
+                <div class="step-circle w-9 h-9 mx-auto bg-white border-2 border-gray-300 rounded-full text-lg flex items-center justify-center font-bold text-gray-400">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <p class="step-title text-sm text-gray-500 mt-2">3. Analysis</p>
+                 <div class="step-line"></div>
+            </div>
+            <div id="step-nav-4" class="step text-center relative">
+                <div class="step-circle w-9 h-9 mx-auto bg-white border-2 border-gray-300 rounded-full text-lg flex items-center justify-center font-bold text-gray-400">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <p class="step-title text-sm text-gray-500 mt-2">4. Conclusion</p>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <main id="content-area" class="bg-gray-50 p-6 rounded-lg min-h-[350px]">
+            <!-- Step 1: Collection -->
+            <div id="step-content-1" class="step-content active">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">1. Collection of Data</h3>
+                <p class="text-gray-700 mb-4">The company provides us with a list of ages for all 50 employees. This is our primary data—it's raw and collected specifically for this task.</p>
+                <div class="p-4 bg-gray-200 rounded-md text-sm text-gray-600 font-mono break-words">
+                    25, 42, 31, 55, 28, 35, 48, 61, 29, 33, 41, 58, 26, 39, 45, 52, 63, 22, 37, 49, 51, 30, 44, 56, 27, 34, 46, 59, 24, 38, 43, 53, 60, 23, 36, 50, 32, 47, 54, 62, 28, 41, 57, 33, 40, 55, 29, 39, 42, 58
+                </div>
+                <p class="text-gray-700 mt-4">This list is hard to interpret. We need to structure it.</p>
+            </div>
+
+            <!-- Step 2: Organisation -->
+            <div id="step-content-2" class="step-content">
+                 <h3 class="text-xl font-bold text-gray-800 mb-3">2. Organisation and Presentation</h3>
+                 <p class="text-gray-700 mb-4">We organise the raw data into a clear frequency table and a bar chart. This visual presentation makes the data much easier to understand at a glance.</p>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <table class="w-full text-left shadow-md rounded-lg overflow-hidden">
+                        <thead class="bg-gray-200">
+                            <tr><th class="p-3 font-semibold">Age Group</th><th class="p-3 font-semibold text-center">Number of Employees</th></tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            <tr class="border-b"><td class="p-3">20-29</td><td class="p-3 font-mono text-center">8</td></tr>
+                            <tr class="border-b"><td class="p-3">30-39</td><td class="p-3 font-mono text-center">12</td></tr>
+                            <tr class="border-b"><td class="p-3">40-49</td><td class="p-3 font-mono text-center">11</td></tr>
+                            <tr class="border-b"><td class="p-3">50-59</td><td class="p-3 font-mono text-center">13</td></tr>
+                            <tr><td class="p-3">60-64</td><td class="p-3 font-mono text-center">6</td></tr>
+                        </tbody>
+                        <tfoot class="bg-gray-800 text-white font-bold">
+                            <tr><td class="p-3">Total</td><td class="p-3 font-mono text-center">50</td></tr>
+                        </tfoot>
+                    </table>
+                    <div>
+                        <canvas id="ageChart"></canvas>
+                    </div>
+                 </div>
+            </div>
+
+            <!-- Step 3: Analysis -->
+            <div id="step-content-3" class="step-content">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">3. Analysis of the Data</h3>
+                <p class="text-gray-700 mb-4">We use a standard mortality table (secondary data) to find the probability of a claim for each group. Then, we calculate the Expected Number of Claims.</p>
+                <p class="text-center text-sm mb-2 font-semibold">Expected Claims = Number of Employees × Probability of Claim</p>
+                <table class="w-full text-sm text-left shadow-md rounded-lg overflow-hidden">
+                     <thead class="bg-gray-200">
+                         <tr>
+                             <th class="p-2">Age Group</th>
+                             <th class="p-2 text-center">Employees</th>
+                             <th class="p-2 text-center">Claim Prob. (q_x)</th>
+                             <th class="p-2 text-center font-bold">Expected Claims</th>
+                         </tr>
+                     </thead>
+                     <tbody class="bg-white">
+                         <tr class="border-b"><td>20-29</td><td class="text-center">8</td><td class="text-center font-mono">0.10%</td><td class="text-center font-mono font-bold text-blue-600">0.008</td></tr>
+                         <tr class="border-b"><td>30-39</td><td class="text-center">12</td><td class="text-center font-mono">0.15%</td><td class="text-center font-mono font-bold text-blue-600">0.018</td></tr>
+                         <tr class="border-b"><td>40-49</td><td class="text-center">11</td><td class="text-center font-mono">0.30%</td><td class="text-center font-mono font-bold text-blue-600">0.033</td></tr>
+                         <tr class="border-b"><td>50-59</td><td class="text-center">13</td><td class="text-center font-mono">0.80%</td><td class="text-center font-mono font-bold text-blue-600">0.104</td></tr>
+                         <tr><td>60-64</td><td class="text-center">6</td><td class="text-center font-mono">1.50%</td><td class="text-center font-mono font-bold text-blue-600">0.090</td></tr>
+                     </tbody>
+                      <tfoot class="bg-gray-800 text-white font-bold">
+                         <tr><td class="p-2" colspan="3">Total Expected Claims</td><td class="p-2 text-center font-mono text-lg">0.253</td></tr>
+                     </tfoot>
+                </table>
+            </div>
+
+            <!-- Step 4: Conclusion -->
+            <div id="step-content-4" class="step-content">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">4. Conclusion and Recommendation</h3>
+                <p class="text-gray-700 mb-4">Our analysis shows we can expect 0.253 claims this year. If the death benefit for each employee is $100,000, we can calculate the total expected cost (the Pure Premium).</p>
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-r-lg text-center">
+                    <p class="text-sm">Total Expected Claims × Death Benefit = Total Pure Premium</p>
+                    <p class="text-lg mt-2">
+                        <span class="font-bold">0.253</span>
+                        <span class="mx-2">×</span>
+                        <span class="font-bold">$100,000</span>
+                        <span class="mx-2">=</span>
+                        <span class="font-extrabold text-2xl">$25,300</span>
+                    </p>
+                </div>
+                <p class="text-gray-700 mt-4 font-semibold">Recommendation:</p>
+                <p class="text-gray-700">The company must collect at least $25,300 in premiums from its employees for the year just to cover the expected cost of claims. The final price would be higher to include expenses and a profit margin.</p>
+            </div>
+        </main>
+
+        <!-- Navigation Buttons -->
+        <footer class="mt-8 flex justify-between">
+            <button id="prev-btn" onclick="navigate(-1)" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>Previous</button>
+            <button id="next-btn" onclick="handleNextClick()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg">Next</button>
+        </footer>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+        let ageChart = null;
+
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function handleNextClick() {
+            if (currentStep === totalSteps) {
+                // If on the last step, clicking "Finish" resets to the beginning.
+                const stepsToMove = 1 - totalSteps; // This will be -3, moving from step 4 to 1.
+                navigate(stepsToMove);
+            } else {
+                navigate(1);
+            }
+        }
+
+        function navigate(direction) {
+            // Hide current step
+            document.getElementById(`step-content-${currentStep}`).classList.remove('active');
+            
+            // Update step
+            currentStep += direction;
+
+            // Show new step
+            document.getElementById(`step-content-${currentStep}`).classList.add('active');
+
+            // If we are on step 2, render the chart
+            if (currentStep === 2) {
+                // Use a small timeout to let the DOM update before rendering the chart
+                setTimeout(renderChart, 50);
+            }
+
+            updateUI();
+        }
+
+        function renderChart() {
+            if (ageChart) {
+                ageChart.destroy();
+            }
+            const ctx = document.getElementById('ageChart').getContext('2d');
+            ageChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['20-29', '30-39', '40-49', '50-59', '60-64'],
+                    datasets: [{
+                        label: 'Number of Employees',
+                        data: [8, 12, 11, 13, 6],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Number of Employees' },
+                            grid: {
+                                display: false // Removes horizontal grid lines
+                            }
+                        },
+                        x: {
+                           grid: {
+                                display: false // Removes vertical grid lines
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Employee Age Distribution' }
+                    }
+                }
+            });
+        }
+
+        function updateUI() {
+            // Update buttons
+            prevBtn.disabled = currentStep === 1;
+            
+            // The "Next" button is always enabled now because "Finish" is a valid action.
+            nextBtn.disabled = false; 
+            
+            if (currentStep === totalSteps) {
+                nextBtn.textContent = 'Finish';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+
+            // Update stepper
+            for (let i = 1; i <= totalSteps; i++) {
+                const stepNav = document.getElementById(`step-nav-${i}`);
+                if (i < currentStep) {
+                    stepNav.classList.add('completed');
+                    stepNav.classList.remove('active');
+                } else if (i === currentStep) {
+                    stepNav.classList.add('active');
+                    stepNav.classList.remove('completed');
+                } else {
+                    stepNav.classList.remove('active', 'completed');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
